@@ -1,0 +1,25 @@
+.slide-right {
+  transform: translate(0%, 0);
+}
+.slide-left {
+  transform: translate(-200%, 0);
+  position: absolute;
+  top: -9999px;
+  left: -9999px;
+}
+
+.bounce-enter-active {
+  animation: bounce-in 0.3s;
+}
+.bounce-leave-active {
+  animation: bounce-in 0.3s reverse;
+}
+
+@keyframes bounce-in {
+  0% {
+    transform: scale(0);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
