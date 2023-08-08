@@ -6,6 +6,7 @@ export default function auth({ next, to, $auth }){
     "login",
     "reset-password",
     "activation",
+    "request"
   ]
   
   // user hasn't logged in yet

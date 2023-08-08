@@ -1,37 +1,41 @@
 <template>
   <div class="relative">
-    <span
-      class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-2 place-content-center text-gray-500"
-    >
-      <!-- <img
-        src="/public/img/icons/search.svg"
+    <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 place-content-center text-gray-500">
+      <img
+        class="w-6"
+        src="@/assets/img/icons/search.svg"
         alt=""
-      > -->
+      >
     </span>
     <input
       ref="searchInput"
-      :value="value"
+      v-model="keyword"
       type="text"
-      class="rounded-full py-2.5 pl-8 w-96 border-none bg-grey-light opacity-50"
-      placeholder="Search by title"
-      @input="$event => searchInput($event)"
+      class="rounded-full py-1 pl-12 w-64 border-2 border-solid bg-grey-light opacity-50"
+      placeholder="Search..."
     >
   </div>
 </template>
+
 <script>
 import { debounce } from 'lodash';
+
 export default {
   name: 'TableSearch',
-  props: {
-    value: {
-      type: String,
-      default: '',
-    },
+  data() {
+    return {
+      keyword: '',
+    };
+  },
+  watch: {
+    keyword(val) {
+      this.searchInput(val);
+    }
   },
   methods: {
     searchInput: debounce(function (val) {
-      this.$emit('input', val.target.value);
-    }, 300),
+      this.$emit('update:modelValue', val);
+    }, 300)
   },
 };
 </script>

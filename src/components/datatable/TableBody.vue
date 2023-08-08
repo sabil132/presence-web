@@ -38,15 +38,41 @@
             </span>
           </td>
           <td  
-            v-for="(header, idy) in headers"
-            class="text-base text-black font-light p-2 cursor-default "
+          v-for="(header, idy) in headers"
+          class="text-base text-black font-light p-2 cursor-default "
           >
-            <slot
-              v-if="$slots[`cell(${header.column})`]"
-              :name="`cell(${header.column})`"
-              :data="isObject(header.column) ? data[header.column.split('.')[0]][header.column.split('.')[1]] : data[header.column]"
-            />
-            <span v-else>
+            <span v-if="$slots[`cellAction(${header.column})`]">
+              <slot
+                  v-if="$slots[`cellAction(${header.column})`]"
+                  :name="`cellAction(${header.column})`"
+                  :data="data"
+                />
+            </span>
+            <span v-if="$slots[`cell(${header.column})`]">
+              <span v-if="isObject(header.column) && $slots[`cell(${header.column})`]">
+                <slot
+                  v-if="$slots[`cell(${header.column})`]"
+                  :name="`cell(${header.column})`"
+                  :data="
+                    data[header.column.split('.')[0]] ?
+                      header.column.split('.').length === 2 ?
+                        data[header.column.split('.')[0]][header.column.split('.')[1]] || '-' :
+                          header.column.split('.').length === 3 ? 
+                            data[header.column.split('.')[0]][header.column.split('.')[1]][header.column.split('.')[2]] || '-'
+                            : data[header.column.split('.')[0]][header.column.split('.')[1]][header.column.split('.')[2]][header.column.split('.')[3]] || '-'
+                      : null
+                  "
+                />
+              </span>
+              <span v-else>
+                <slot
+                  v-if="$slots[`cell(${header.column})`]"
+                  :name="`cell(${header.column})`"
+                  :data="data[header.column] || '-'"
+                />
+              </span>
+            </span>
+            <span v-if="!$slots[`cellAction(${header.column})`] && !$slots[`cell(${header.column})`]">
               <span v-if="isObject(header.column)">
                 <span v-if="data[header.column.split('.')[0]]">
                   {{  
@@ -56,18 +82,9 @@
                             header.column.split('.').length === 3 ? 
                               data[header.column.split('.')[0]][header.column.split('.')[1]][header.column.split('.')[2]] || '-'
                               : data[header.column.split('.')[0]][header.column.split('.')[1]][header.column.split('.')[2]][header.column.split('.')[3]] || '-'
-                        : '-'
+                        : null
                   }}
                 </span>
-                <MiscBadge
-                  v-if="!data[header.column.split('.')[0]]"
-                  color="#EA9291"
-                  roundedMd
-                >
-                  <span class="text-white">
-                    Not Yet Assigned
-                  </span>
-                </MiscBadge>
               </span>
               <span v-else>
                 {{ data[header.column] || '-' }}

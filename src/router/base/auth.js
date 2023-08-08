@@ -25,4 +25,12 @@ export default [
       layout: AuthLayout
     }
   },
+  {
+    path: '/request/:id',
+    name: 'request',
+    component: () => import('@/views/auth/request/index.vue'),
+    meta: {
+      layout: AuthLayout
+    }
+  },
 ]

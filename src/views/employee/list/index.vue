@@ -2,10 +2,12 @@
 	<DatatableTableWrapper>
     <template #header>
       <DatatableTableHead
+        v-model="pagination"
         class="px-4"
         table-title="Employee List"
         button-title="Create Employee  "
         :button-link="btnCreate"
+        :button-show-filter="false"
         button-show
       />
     </template>
@@ -14,8 +16,8 @@
       :headers="tableHead"
       :data-list="data"
       :action-detail="btnDetail"
-      :action-delete="btnDelete"
       :action-edit="btnEdit"
+      :action-delete="btnDelete"
       with-actions
     >
       <template #cell(date_entry)="{ data }">
@@ -23,7 +25,7 @@
       </template>
       <template #cell(is_active)="{data}">
         <MiscBadge
-            v-if="!data"
+            v-if="data === '-'"
             color="#EA9291"
             roundedMd
           >
@@ -72,8 +74,19 @@ export default {
           displayName: 'Status',
         }
       ],
+      pagination: {
+        search: '',
+      },
       data: []
     }
+  },
+  watch: {
+    pagination: {
+      handler() {
+        this.fetchData()
+      },
+      deep: true,
+    },
   },
   created() {
     this.fetchData()
@@ -88,7 +101,7 @@ export default {
     btnDelete(params) {
       this.$swal({
         title: 'Are you sure?',
-        text: "You won't be able to revert this!",
+        text: `You want to delete this employee`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#1fa446',
@@ -106,6 +119,17 @@ export default {
             const { meta } = res.data;
 
             if(meta.status === 'success'){
+              this.$swal({
+                toast: true,
+                position: "top-end",
+                icon: "success",
+                title: "Employee deleted successfully",
+                timer: 1000,
+                showConfirmButton: false,
+              })
+              .then(() => {
+                this.fetchData()
+              })
             }
           })
           .catch((err) => {
@@ -114,7 +138,7 @@ export default {
               position: "top-end",
               icon: "error",
               title: "Failed to delete employee",
-              timer: 3000,
+              timer: 1000,
               showConfirmButton: false,
             })
           })
@@ -129,7 +153,7 @@ export default {
         isLoading: true,
       })
 
-      axios.get(`${import.meta.env.VITE_LIVE_URL}/api/employee`, {
+      axios.get(`${import.meta.env.VITE_LIVE_URL}/api/employee?name=${this.pagination.search || ''}`, {
         headers: {
           Authorization: `Bearer ${JSON.parse(localStorage.getItem('token'))}`,
         },
@@ -148,7 +172,7 @@ export default {
           position: "top-end",
           icon: "error",
           title: "Failed to fetch data, please try again later",
-          timer: 3000,
+          timer: 1000,
           showConfirmButton: false,
         })
       })

@@ -8,7 +8,7 @@
         </div>
         <div class="bg-gray-400 w-[50px] h-[50px] rounded-full overflow-hidden object-scale-down object-center cursor-pointer"
           @click="expanded = !expanded">
-          <img :src="user.photo" alt="user-profile" class="h-full w-full object-cover object-[0px_-10px] ">
+          <img :src="user.photo" alt="user-profile" class="h-full w-full object-cover object-[-10px_0px] -rotate-90">
         </div>
         <!-- Expanded -->
         <transition name="bounce">
@@ -42,9 +42,18 @@ export default {
   },
   methods: {
     logout() {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      this.$router.push("/login");
+      this.$store.global.$patch({
+        isLoading: true,
+      })
+      
+      setTimeout(() => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        this.$router.push("/");
+        this.$store.global.$patch({
+          isLoading: false,
+        })
+      }, 1000)
     }
   },
 }

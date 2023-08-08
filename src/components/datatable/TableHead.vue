@@ -4,38 +4,23 @@
       <h4 class="text-xl">
         {{ tableTitle }}
       </h4>
-      <!-- Filter -->
-      <!-- <div
-        v-if="buttonShowFilter"
-        class="flex items-center"
-      >
-        <transition name="bounce">
-          <div v-if="showFilter">
-            <TableFilter
-              v-model="pagination"
-              :custom-filter="customFilter"
-              class="prevent-class transition duration-300"
-            />
-          </div>
-        </transition>
-      </div> -->
       <!-- Search -->
-      <!-- <div
-        v-if="buttonShowSearch"
-        class="flex items-center gap-2 overflow-hidden"
+      <div
+        class="flex items-center gap-2"
       >
-        <div>
-          <TableSearch
-            ref="search"
-            v-model="searchInput"
-            class="prevent-class transition duration-300"
-            :class="{
-              'slide-right': showSearch,
-              'slide-left': !showSearch,
-            }"
-          />
-        </div>
-      </div> -->
+        <TableSearch
+          v-if="buttonShowSearch"
+          ref="searchSection"
+          v-model="searchInput"
+          class="p-1"
+        />
+        <TableFilter
+          v-if="buttonShowFilter"
+          ref="filterSection"
+          v-model="filterInput"
+          class="p-1"
+        />
+      </div>
     </div>
     <div
       v-if="$slots.button"
@@ -66,14 +51,18 @@
 import { debounce, isEqual } from 'lodash';
 import TableSearch from '@/components/datatable/TableSearch.vue';
 import TableFilter from '@/components/datatable/TableFilter.vue';
-// import IconDownload from '@/components/icons/IconDownload.vue';
 export default {
   components: {
     TableSearch,
-    TableFilter,
-    // IconDownload
+    TableFilter
   },
   props: {
+    modelValue: {
+      type: Object,
+      default() {
+        return {};
+      },
+    },
     tableTitle: {
       type: String,
       default() {
@@ -98,14 +87,10 @@ export default {
         return () => {};
       },
     },
-    value: {
-      type: Object,
-      required: true,
-    },
-    customFilter: {
-      type: Array,
+    buttonShowSearch: {
+      type: Boolean,
       default() {
-        return [];
+        return true;
       },
     },
     buttonShowFilter: {
@@ -114,62 +99,27 @@ export default {
         return true;
       },
     },
-    buttonShowSearch: {
-      type: Boolean,
-      default() {
-        return true;
-      },
-    },
   },
   data() {
     return {
-      pagination: {
-        search: null,
-        order_by: '',
-      },
+      pagination: {},
       searchInput: '',
-      showSearch: false,
-      showFilter: false,
+      filterInput: '',
     };
   },
   watch: {
-    // value: {
-    //   handler: function (newval) {
-    //     this.pagination = { ...newval };
-    //   },
-    //   deep: true,
-    // },
-    // pagination: {
-    //   handler(newval, oldval) {
-    //     if (!isEqual(newval, oldval)) {
-    //       this.$emit('input', newval);
-    //     }
-    //   },
-    //   deep: true,
-    // },
-    // searchInput: debounce(function (newval) {
-    //   this.$emit('input', {
-    //     ...this.pagination,
-    //     search: newval,
-    //   });
-    // }, 300),
-    // showSearch: function (newval) {
-    //   if (newval) {
-    //     this.$refs.search.$refs.searchInput.focus()
-    //   }
-    // },
-  },
-  mounted() {
-    // this.pagination = { ...this.pagination, ...this.value };
-    // this.searchInput = this.value.search;
-  },
-  methods: {
-    clickOutsideSearch() {
-      this.showSearch = false;
-    },
-    clickOutsideFilter() {
-      this.showFilter = false;
-    },
+    searchInput: debounce(function (newval) {
+      this.$emit('update:modelValue', {
+        ...this.pagination,
+        search: newval,
+      });
+    }, 300),
+    filterInput: debounce(function (newval) {
+      this.$emit('update:modelValue', {
+        ...this.pagination,
+        filter: newval,
+      });
+    }, 300),
   },
 };
 </script>

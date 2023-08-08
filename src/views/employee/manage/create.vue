@@ -391,7 +391,7 @@ export default {
       })
     },
     fetchPosition() {
-      axios.get(`${import.meta.env.VITE_LIVE_URL}/api/position`, {
+      axios.get(`${import.meta.env.VITE_LIVE_URL}/api/position?name=`, {
         headers: {
           Authorization: `Bearer ${JSON.parse(localStorage.getItem('token'))}`,
         },
@@ -412,7 +412,7 @@ export default {
       })
     },
     fetchUnit() {
-      axios.get(`${import.meta.env.VITE_LIVE_URL}/api/unit`, {
+      axios.get(`${import.meta.env.VITE_LIVE_URL}/api/unit?name=`, {
         headers: {
           Authorization: `Bearer ${JSON.parse(localStorage.getItem('token'))}`,
         },

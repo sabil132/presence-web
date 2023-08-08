@@ -12,6 +12,7 @@
             ref="form"
             v-slot="{ meta }"
             :validation-schema="schema"
+            @submit="resetPassword"
           >
   
             <!-- password Field -->
@@ -76,6 +77,8 @@
   </template>
   
   <script>
+  import axios from 'axios'
+  
   import LoginSideImage from "@/fragments/auth/LoginSideImage.vue";
   
   export default {
@@ -94,6 +97,39 @@
         }
       }
     },
+    methods: {
+      resetPassword() {
+      // const formData = new FormData();
+
+      axios.patch(`${import.meta.env.VITE_LIVE_URL}/api/auth/forgot-password/${this.$route.query.token}`, {
+        password: this.input.password
+      })
+      .then(res => {
+        const { meta } = res.data;
+
+        if(meta.status === 'success'){
+          this.$swal({
+            title: 'Success',
+            text: meta.message,
+            icon: 'success',
+            confirmButtonText: 'OK',
+          }).then(() => {
+            this.$router.push({ name: 'login' })
+          })
+        }
+      })
+      .catch(err => {
+        this.$swal({
+          toast: true,
+          position: "top-end",
+          icon: "error",
+          title: "Failed to update password, please try again later",
+          timer: 3000,
+          showConfirmButton: false,
+        })
+      })
+    }
+    }
   };
   </script>
   

@@ -2,9 +2,11 @@
 	<DatatableTableWrapper>
     <template #header>
       <DatatableTableHead
+        v-model="pagination"
         class="px-4"
         table-title="Presence List"
         :button-link="btnCreate"
+        :button-show-search="false"
       />
     </template>
     <DatatableTableBody
@@ -15,7 +17,7 @@
       with-actions
     >
       <template #cell(total_working_hours)="{ data }">
-        {{ data }} Hours
+        {{ data }} {{ data !== '-' ? 'Hours' : '' }}
       </template>
     </DatatableTableBody>
   </DatatableTableWrapper>
@@ -44,18 +46,26 @@ export default {
           displayName: 'Year',
         },
       ],
+      pagination: {
+        filter: this.$moment().format('YYYY-MM'),
+      },
       data: [],
-      filter: {
-        date: this.$moment(),
-      }
     }
+  },
+  watch: {
+    pagination: {
+      handler() {
+        this.fetchData()
+      },
+      deep: true,
+    },
   },
   created() {
     this.fetchData()
   },
   methods: {
     btnDetail(params) {
-      this.$router.push(`/presence/${params.employee.id}/${this.$moment(this.date).format('YYYY-MM')}`)
+      this.$router.push(`/presence/${params.employee.id}/${this.pagination.filter}`)
     },
 	fetchData() {
     this.$store.global.$patch({
@@ -63,6 +73,9 @@ export default {
     })
 
 		axios.get(`${import.meta.env.VITE_LIVE_URL}/api/presence`, {
+      params: {
+        month: this.pagination.filter || this.$moment().format('YYYY-MM'),
+      },
       headers: {
         Authorization: `Bearer ${JSON.parse(localStorage.getItem('token'))}`,
       },

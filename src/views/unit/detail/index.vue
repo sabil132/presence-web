@@ -34,6 +34,8 @@
         <DatatableTableHead
           class="px-4"
           :button-link="btnCreate"
+          :button-show-search="false"
+          :button-show-filter="false"
         />
       </template>
       <DatatableTableBody

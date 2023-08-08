@@ -2,10 +2,12 @@
 	<DatatableTableWrapper>
     <template #header>
       <DatatableTableHead
+        v-model="pagination"
         class="px-4"
         table-title="Position List"
         button-title="Create Position  "
         :button-link="btnCreate"
+        :button-show-filter="false"
         button-show
       />
     </template>
@@ -31,8 +33,19 @@ export default {
           displayName: 'Name',
         },
       ],
+      pagination: {
+        search: '',
+      },
       data: []
     }
+  },
+  watch: {
+    pagination: {
+      handler() {
+        this.fetchData()
+      },
+      deep: true,
+    },
   },
   created() {
     this.fetchData()
@@ -69,7 +82,7 @@ export default {
                 toast: true,
                 position: "top-end",
                 icon: "success",
-                title: "Employee deleted successfully",
+                title: "Position deleted successfully",
                 timer: 1000,
                 showConfirmButton: false,
               })
@@ -83,8 +96,8 @@ export default {
               toast: true,
               position: "top-end",
               icon: "error",
-              title: "Failed to delete employee",
-              timer: 3000,
+              title: err.response.data.meta.message ? err.response.data.meta.message : "Failed to delete position",
+              timer: 1000,
               showConfirmButton: false,
             })
           })
@@ -99,7 +112,7 @@ export default {
       isLoading: true,
     })
 
-		axios.get(`${import.meta.env.VITE_LIVE_URL}/api/position`, {
+		axios.get(`${import.meta.env.VITE_LIVE_URL}/api/position?name=${this.pagination.search}`, {
       headers: {
         Authorization: `Bearer ${JSON.parse(localStorage.getItem('token'))}`,
       },
@@ -118,7 +131,7 @@ export default {
         position: "top-end",
         icon: "error",
         title: "Failed to fetch data, please try again later",
-        timer: 3000,
+        timer: 1000,
         showConfirmButton: false,
       })
     })

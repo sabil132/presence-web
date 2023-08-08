@@ -212,6 +212,25 @@
               {{ errorMsg.role }}
             </small>
           </div>
+          <div class="flex flex-col mt-4">
+            <label 
+              for="role"
+              class="text-xs"
+            >
+              Status<span class="text-red-500">*</span>
+            </label>
+            <FormSelect
+              v-model="input.status"
+              :list="statusList"
+              class="mt-3"
+            />
+            <small
+              v-show="errorMsg.status"
+              class="text-red-500"
+            >
+              {{ errorMsg.status }}
+            </small>
+          </div>
         </div>
       </div>
       <template #action>
@@ -248,21 +267,10 @@ export default {
         position_id: '',
         unit_id: '',
         role: '--Select--',
+        status: '--Select--',
       },
       positionList: [],
       unitList: [],
-      scheme: {
-        name: 'required',
-        placeOfBirth: 'required',
-        dateOfBirth: 'required',
-        maritalStatus: 'required',
-        gender: 'required',
-        position: 'required',
-        dateEntry: 'required',
-        phone: 'required',
-        email: 'required',
-        role: 'required',
-      },
       maritalSatusList: [
         'Single', 
         'Married', 
@@ -276,6 +284,10 @@ export default {
       roleList: [
         'Administrator',
         'Staff'
+      ],
+      statusList: [
+        'Active',
+        'Inactive'
       ],
     }
   },
@@ -349,6 +361,7 @@ export default {
             position_id: data.position_id,
             unit_id: data.unit_id,
             role: data.role,
+            status: data.is_active ? 'Active' : 'Inactive',
           }
         }
       })
@@ -364,7 +377,7 @@ export default {
       })
     },
     fetchPosition() {
-      axios.get(`${import.meta.env.VITE_LIVE_URL}/api/position`, {
+      axios.get(`${import.meta.env.VITE_LIVE_URL}/api/position?name=`, {
         headers: {
           Authorization: `Bearer ${JSON.parse(localStorage.getItem('token'))}`,
         },
@@ -385,7 +398,7 @@ export default {
       })
     },
     fetchUnit() {
-      axios.get(`${import.meta.env.VITE_LIVE_URL}/api/unit`, {
+      axios.get(`${import.meta.env.VITE_LIVE_URL}/api/unit?name=`, {
         headers: {
           Authorization: `Bearer ${JSON.parse(localStorage.getItem('token'))}`,
         },
@@ -434,6 +447,11 @@ export default {
         this.errorMsg.unit = 'Unit is required';
       }
 
+      if(this.input.status === '--Select--') {
+        errorCount++;
+        this.errorMsg.status = 'Status is required';
+      }
+
       validateColumn.map(node => {
         if (!this.input[node] || this.input[node] === '--Select--') {
           errorCount++;
@@ -459,6 +477,7 @@ export default {
         position_id: this.input.position_id,
         unit_id: this.input.unit_id,
         role: this.input.role,
+        active: this.input.status === 'Active' ? true : false,
       }, {
         headers: {
           Authorization: `Bearer ${JSON.parse(localStorage.getItem('token'))}`,
