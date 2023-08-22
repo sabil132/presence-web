@@ -55,6 +55,12 @@
       <template #cell(working_hours)="{ data }">
         {{ data }} {{ data? 'Hours' : '-' }}
       </template>
+      <template #cell(clock_in)="{ data }">
+        {{ $moment(data).format('HH:mm') }}
+      </template>
+      <template #cell(clock_out)="{ data }">
+        {{ $moment(data).format('HH:mm') }}
+      </template>
       </DatatableTableBody>
     </DatatableTableWrapper>
   </MiscCard>
